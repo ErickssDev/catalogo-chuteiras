@@ -1,0 +1,5 @@
+.env
+gsesportes.db
+app/fotos/*
+__pycache__/
+*.pyc
