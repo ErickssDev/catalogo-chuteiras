@@ -1,5 +1,6 @@
 .env
 gsesportes.db
 app/fotos/*
+!app/fotos/.gitkeep
 __pycache__/
 *.pyc
