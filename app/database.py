@@ -1,6 +1,10 @@
 from sqlmodel import create_engine, SQLModel, Session
+import os
+from dotenv import load_dotenv
 
-DATABASE_URL = "sqlite:///./gsesportes.db"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./gsesportes.db")
 
 engine = create_engine(DATABASE_URL, echo=True)
 
