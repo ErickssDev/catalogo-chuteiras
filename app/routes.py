@@ -214,3 +214,20 @@ def deletar_foto(id: int, foto_id: int, session: Session = Depends(get_session))
     session.delete(foto)
     session.commit()
     return {"mensagem": "Foto deletada com sucesso"}
+
+@router.delete("/admin/resetar-banco")
+def resetar_banco(session: Session = Depends(get_session)):
+    fotos = session.exec(select(FotoChuteira)).all()
+    for foto in fotos:
+        session.delete(foto)
+    chuteiras = session.exec(select(Chuteira)).all()
+    for chuteira in chuteiras:
+        session.delete(chuteira)
+    modelos = session.exec(select(Modelo)).all()
+    for modelo in modelos:
+        session.delete(modelo)
+    marcas = session.exec(select(Marca)).all()
+    for marca in marcas:
+        session.delete(marca)
+    session.commit()
+    return {"mensagem": "Banco resetado com sucesso"}
