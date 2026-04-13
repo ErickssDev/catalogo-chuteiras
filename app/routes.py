@@ -117,7 +117,7 @@ def listar_chuteiras(session: Session = Depends(get_session)):
             "marca": marca.nome,
             "preco_pix": chuteira.preco_pix,
             "preco_cartao": chuteira.preco_cartao,
-            "fotos": [f.url for f in fotos]
+            "fotos": [{"id": f.id, "url": f.url} for f in fotos]
         })
     return resultado
 
@@ -137,7 +137,7 @@ def buscar_chuteira(id: int, session: Session = Depends(get_session)):
         "marca": marca.nome,
         "preco_pix": chuteira.preco_pix,
         "preco_cartao": chuteira.preco_cartao,
-        "fotos": [f.url for f in fotos]
+        "fotos": [{"id": f.id, "url": f.url} for f in fotos]
     }
 
 @router.post("/chuteiras")
@@ -186,7 +186,7 @@ def listar_chuteiras_por_modelo(id: int, session: Session = Depends(get_session)
             "cor": chuteira.cor,
             "preco_pix": chuteira.preco_pix,
             "preco_cartao": chuteira.preco_cartao,
-            "fotos": [f.url for f in fotos]
+            "fotos": [{"id": f.id, "url": f.url} for f in fotos]
         })
     return {"modelo": modelo.nome, "tipo": modelo.tipo, "chuteiras": resultado}
 
@@ -197,10 +197,8 @@ def upload_foto(id: int, foto: UploadFile = File(...), session: Session = Depend
     chuteira = session.get(Chuteira, id)
     if not chuteira:
         raise HTTPException(status_code=404, detail="Chuteira não encontrada")
-    
     resultado = cloudinary.uploader.upload(foto.file, folder="gsesportes")
     url = resultado["secure_url"]
-    
     nova_foto = FotoChuteira(chuteira_id=id, url=url)
     session.add(nova_foto)
     session.commit()
