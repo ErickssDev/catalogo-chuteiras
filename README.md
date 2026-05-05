@@ -9,16 +9,16 @@ Site de catálogo de chuteiras desenvolvido para a loja GS Esportes, com integra
 ## 📸 Screenshots
 
 ### Home
-![Home](docs/screenshots/home.png)
+![Home](docs/screenshots/home.jpeg)
 
 ### Catálogo por Marca
-![Catálogo](docs/screenshots/catalogo.png)
+![Catálogo](docs/screenshots/catalogo.jpeg)
 
 ### Página do Produto
-![Produto](docs/screenshots/produto.png)
+![Produto](docs/screenshots/produto.jpeg)
 
 ### Finalizar Pedido
-![Finalizar](docs/screenshots/finalizar.png)
+![Finalizar](docs/screenshots/finalizar.jpeg)
 
 ---
 
