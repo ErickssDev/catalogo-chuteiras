@@ -2,7 +2,7 @@
 
 Site de catálogo de chuteiras desenvolvido para a loja GS Esportes, com integração direta ao WhatsApp para finalização de pedidos.
 
-🔗 **Site ao vivo:** [gsesportes.vercel.app](https://gsesportes.vercel.app)
+🔗 **Site ao vivo:** [gs-esportes.vercel.app](https://gs-esportes.vercel.app)
 
 ---
 
