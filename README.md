@@ -110,5 +110,5 @@ uvicorn app.main:app --reload
 
 ## 👨‍💻 Desenvolvido por
 
-- **Backend:** Erick
-- **Frontend:** Rodrigo
+- **Backend:** Feito por [ErickssDev](https://github.com/ErickssDev)
+- **Frontend:** Feito por [DigueraDev](https://github.com/digueraDEV)
