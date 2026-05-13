@@ -1,8 +1,11 @@
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from app.database import criar_tabelas
 from app.routes import router
+from app.routes_camisas import router as camisas_router
 from dotenv import load_dotenv
 import os
 
@@ -27,3 +30,8 @@ def on_startup():
     criar_tabelas()
 
 app.include_router(router)
+app.include_router(camisas_router)
+
+@app.get("/admin")                                 
+def painel_admin():                                 
+    return FileResponse("admin.html")

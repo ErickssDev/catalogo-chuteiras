@@ -23,3 +23,24 @@ class Chuteira(SQLModel, table=True):
     preco_pix: float
     preco_cartao: float
     fotos: List[FotoChuteira] = Relationship()
+
+    # ── CAMISAS ────────────────────────────────────────────────
+
+class Liga(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome: str
+
+class TimeCamisa(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome: str
+    liga_id: int = Field(foreign_key="liga.id")
+
+class ModeloCamisa(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nome: str
+    time_id: int = Field(foreign_key="timecamisa.id")
+
+class FotoModeloCamisa(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    modelo_id: int = Field(foreign_key="modelocamisa.id")
+    url: str

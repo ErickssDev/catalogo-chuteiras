@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><base href="https://d16ilfvy4mv02r.cloudfront.net/workspaces/Nq4VUjnn749Sak5vmyfeRFvdNXzymiRe/65188b63-2b03-418f-a577-e26675712a91/files/">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GS Esportes — Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .tab-btn.active { background:#1d4ed8; color:#fff; }
+  .section { display:none; }
+  .section.active { display:block; }
+  .card { background:#fff; border-radius:10px; box-shadow:0 1px 6px #0001; padding:24px; margin-bottom:16px; }
+  input,select { border:1px solid #d1d5db; border-radius:6px; padding:8px 10px; width:100%; font-size:14px; }
+  input:focus,select:focus { outline:2px solid #3b82f6; border-color:transparent; }
+  .btn { padding:8px 18px; border-radius:6px; font-size:14px; font-weight:600; cursor:pointer; transition:.15s; }
+  .btn-blue  { background:#2563eb; color:#fff; }
+  .btn-blue:hover  { background:#1d4ed8; }
+  .btn-red   { background:#ef4444; color:#fff; }
+  .btn-red:hover   { background:#dc2626; }
+  .btn-gray  { background:#e5e7eb; color:#374151; }
+  .btn-gray:hover  { background:#d1d5db; }
+  .btn-green { background:#16a34a; color:#fff; }
+  .btn-green:hover { background:#15803d; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { background:#f3f4f6; text-align:left; padding:10px 12px; font-weight:700; color:#374151; }
+  td { padding:10px 12px; border-top:1px solid #f3f4f6; vertical-align:middle; }
+  tr:hover td { background:#fafafa; }
+  .tag { display:inline-block; padding:2px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+  .modal-bg { display:none; position:fixed; inset:0; background:#0006; z-index:100; align-items:center; justify-content:center; }
+  .modal-bg.open { display:flex; }
+  .modal { background:#fff; border-radius:12px; padding:32px; min-width:360px; max-width:500px; width:100%; box-shadow:0 8px 40px #0003; }
+  .toast { position:fixed; bottom:24px; right:24px; z-index:200; padding:14px 22px; border-radius:8px; color:#fff; font-weight:600; font-size:14px; box-shadow:0 4px 16px #0002; animation:fadeIn .2s; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- HEADER -->
+<div class="bg-white shadow-sm px-8 py-4 flex items-center gap-4 mb-6">
+  <span class="text-2xl">⚽</span>
+  <h1 class="text-xl font-bold text-gray-800">GS Esportes <span class="text-blue-600">Admin</span></h1>
+  <span class="ml-auto text-xs text-gray-400">API: <span id="api-url-label" class="font-mono">http://localhost:8000</span></span>
+</div>
+
+<div class="max-w-6xl mx-auto px-4">
+
+  <!-- TABS -->
+  <div class="flex gap-2 mb-6 flex-wrap">
+    <button class="tab-btn btn btn-gray active" onclick="showSection('marcas')">👟 Marcas</button>
+    <button class="tab-btn btn btn-gray" onclick="showSection('modelos')">📦 Modelos</button>
+    <button class="tab-btn btn btn-gray" onclick="showSection('chuteiras')">👟 Chuteiras</button>
+    <div class="w-px bg-gray-300 mx-1"></div>
+    <button class="tab-btn btn btn-gray" onclick="showSection('ligas')">🏆 Ligas</button>
+    <button class="tab-btn btn btn-gray" onclick="showSection('times')">🛡️ Times</button>
+    <button class="tab-btn btn btn-gray" onclick="showSection('camisas')">👕 Camisas</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- MARCAS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="section-marcas" class="section active">
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">➕ Nova Marca</h2>
+      <div class="flex gap-3">
+        <input id="marca-nome" placeholder="Nome da marca (ex: Nike, Adidas…)" />
+        <button class="btn btn-blue whitespace-nowrap" onclick="criarMarca()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">📋 Marcas cadastradas</h2>
+      <table><thead><tr><th>ID</th><th>Nome</th><th>Ações</th></tr></thead>
+      <tbody id="tabela-marcas"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- MODELOS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="section-modelos" class="section">
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">➕ Novo Modelo</h2>
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <input id="modelo-nome" placeholder="Nome do modelo" />
+        <select id="modelo-tipo">
+          <option value="">Tipo de chuteira</option>
+          <option value="FG">FG — Campo</option>
+          <option value="TF">TF — Society</option>
+          <option value="IC">IC — Quadra/Futsal</option>
+        </select>
+        <select id="modelo-marca"></select>
+      </div>
+      <button class="btn btn-blue mt-3" onclick="criarModelo()">Salvar</button>
+    </div>
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">📋 Modelos cadastrados</h2>
+      <table><thead><tr><th>ID</th><th>Nome</th><th>Tipo</th><th>Marca</th><th>Ações</th></tr></thead>
+      <tbody id="tabela-modelos"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CHUTEIRAS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="section-chuteiras" class="section">
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">➕ Nova Chuteira</h2>
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <select id="chuteira-modelo"></select>
+        <input id="chuteira-cor" placeholder="Cor (ex: Azul/Branco)" />
+        <input id="chuteira-pix" type="number" placeholder="Preço Pix (R$)" step="0.01" />
+        <input id="chuteira-cartao" type="number" placeholder="Preço Cartão (R$)" step="0.01" />
+      </div>
+      <button class="btn btn-blue mt-3" onclick="criarChuteira()">Salvar</button>
+    </div>
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">📋 Chuteiras cadastradas</h2>
+      <table><thead><tr><th>ID</th><th>Modelo</th><th>Tipo</th><th>Cor</th><th>Pix</th><th>Cartão</th><th>Fotos</th><th>Ações</th></tr></thead>
+      <tbody id="tabela-chuteiras"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LIGAS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="section-ligas" class="section">
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">➕ Nova Liga</h2>
+      <div class="flex gap-3">
+        <input id="liga-nome" placeholder="Nome da liga (ex: Série A, Premier League…)" />
+        <button class="btn btn-blue whitespace-nowrap" onclick="criarLiga()">Salvar</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">📋 Ligas cadastradas</h2>
+      <table><thead><tr><th>ID</th><th>Nome</th><th>Ações</th></tr></thead>
+      <tbody id="tabela-ligas"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TIMES -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="section-times" class="section">
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">➕ Novo Time</h2>
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <input id="time-nome" placeholder="Nome do time (ex: Flamengo)" />
+        <select id="time-liga"></select>
+      </div>
+      <button class="btn btn-blue mt-3" onclick="criarTime()">Salvar</button>
+    </div>
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">📋 Times cadastrados</h2>
+      <table><thead><tr><th>ID</th><th>Nome</th><th>Liga</th><th>Ações</th></tr></thead>
+      <tbody id="tabela-times"></tbody></table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CAMISAS -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="section-camisas" class="section">
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">➕ Nova Camisa</h2>
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <input id="camisa-nome" placeholder="Nome/Modelo (ex: Camisa Home 24/25)" />
+        <select id="camisa-time"></select>
+      </div>
+      <button class="btn btn-blue mt-3" onclick="criarCamisa()">Salvar</button>
+    </div>
+    <div class="card">
+      <h2 class="text-lg font-bold mb-4 text-gray-700">📋 Camisas cadastradas</h2>
+      <table><thead><tr><th>ID</th><th>Nome</th><th>Time</th><th>Liga</th><th>Fotos</th><th>Ações</th></tr></thead>
+      <tbody id="tabela-camisas"></tbody></table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- MODAL FOTOS -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="modal-fotos" class="modal-bg">
+  <div class="modal">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="text-lg font-bold text-gray-800" id="modal-fotos-titulo">Fotos</h3>
+      <button onclick="fecharModalFotos()" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+    </div>
+
+    <!-- Upload -->
+    <div class="mb-5">
+      <label class="block text-sm font-semibold text-gray-600 mb-2">Adicionar foto</label>
+      <div class="flex gap-2">
+        <input type="file" id="foto-input" accept="image/*" class="text-sm" />
+        <button class="btn btn-green whitespace-nowrap" onclick="uploadFoto()">📤 Enviar</button>
+      </div>
+    </div>
+
+    <!-- Lista de fotos -->
+    <div id="modal-fotos-lista" class="grid grid-cols-3 gap-3"></div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div id="modal-editar" class="modal-bg">
+  <div class="modal">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="text-lg font-bold text-gray-800" id="modal-editar-titulo">Editar</h3>
+      <button onclick="fecharModalEditar()" class="text-gray-400 hover:text-gray-700 text-2xl leading-none">&times;</button>
+    </div>
+    <div id="modal-editar-corpo" class="flex flex-col gap-3"></div>
+    <div class="flex gap-2 mt-5">
+      <button class="btn btn-blue flex-1" onclick="salvarEdicao()">Salvar</button>
+      <button class="btn btn-gray" onclick="fecharModalEditar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000'
+
+// ─── ESTADO GLOBAL ────────────────────────────────────────
+let marcas = [], modelos = [], ligas = [], times = []
+let fotoCtx = { tipo: null, id: null }
+let editCtx = { tipo: null, id: null }
+
+// ─── TABS ─────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'))
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+  document.getElementById('section-' + name).classList.add('active')
+  event.target.classList.add('active')
+
+  // Carrega dados da seção ativada
+  const loaders = {
+    marcas:    () => carregarMarcas(),
+    modelos:   () => { carregarMarcas(); carregarModelos() },
+    chuteiras: () => { carregarModelos(); carregarChuteiras() },
+    ligas:     () => carregarLigas(),
+    times:     () => { carregarLigas(); carregarTimes() },
+    camisas:   () => { carregarTimes(); carregarLigas(); carregarCamisas() },
+  }
+  loaders[name]?.()
+}
+
+// ─── TOAST ────────────────────────────────────────────────
+function toast(msg, cor = '#16a34a') {
+  const t = document.createElement('div')
+  t.className = 'toast'
+  t.style.background = cor
+  t.textContent = msg
+  document.body.appendChild(t)
+  setTimeout(() => t.remove(), 3000)
+}
+
+// ─── FETCH HELPERS ────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } }
+  if (body) opts.body = JSON.stringify(body)
+  const r = await fetch(API + path, opts)
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || r.statusText) }
+  return r.json().catch(() => ({}))
+}
+async function apiUpload(path, formData) {
+  const r = await fetch(API + path, { method: 'POST', body: formData })
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || r.statusText) }
+  return r.json()
+}
+
+// ═══════════════════════════════════════════════════════════
+// MARCAS
+// ═══════════════════════════════════════════════════════════
+async function carregarMarcas() {
+  marcas = await api('GET', '/marcas')
+  const tb = document.getElementById('tabela-marcas')
+  tb.innerHTML = marcas.map(m => `
+    <tr>
+      <td class="text-gray-400 text-xs">#${m.id}</td>
+      <td class="font-semibold">${m.nome}</td>
+      <td class="flex gap-2">
+        <button class="btn btn-gray" onclick="abrirEditarMarca(${m.id},'${m.nome.replace(/'/g,"\\'")}')">✏️ Editar</button>
+        <button class="btn btn-red" onclick="deletarMarca(${m.id})">🗑️ Excluir</button>
+      </td>
+    </tr>`).join('')
+
+  // Atualiza select de modelos
+  const sel = document.getElementById('modelo-marca')
+  if (sel) sel.innerHTML = '<option value="">Selecione a marca</option>' +
+    marcas.map(m => `<option value="${m.id}">${m.nome}</option>`).join('')
+}
+
+async function criarMarca() {
+  const nome = document.getElementById('marca-nome').value.trim()
+  if (!nome) return toast('Digite o nome da marca', '#ef4444')
+  try {
+    await api('POST', '/marcas', { nome })
+    document.getElementById('marca-nome').value = ''
+    carregarMarcas()
+    toast('Marca criada!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function abrirEditarMarca(id, nome) {
+  editCtx = { tipo: 'marca', id }
+  document.getElementById('modal-editar-titulo').textContent = 'Editar Marca'
+  document.getElementById('modal-editar-corpo').innerHTML = `
+    <label class="text-sm font-semibold text-gray-600">Nome</label>
+    <input id="edit-campo-nome" value="${nome}" />`
+  document.getElementById('modal-editar').classList.add('open')
+}
+
+async function deletarMarca(id) {
+  if (!confirm('Excluir esta marca?')) return
+  try { await api('DELETE', '/marcas/' + id); carregarMarcas(); toast('Marca excluída!') }
+  catch(e) { toast(e.message, '#ef4444') }
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODELOS
+// ═══════════════════════════════════════════════════════════
+async function carregarModelos() {
+  modelos = await api('GET', '/modelos')
+  const tb = document.getElementById('tabela-modelos')
+  const tipoLabel = { FG:'Campo', TF:'Society', IC:'Quadra' }
+  tb.innerHTML = modelos.map(m => {
+    const marca = marcas.find(x => x.id === m.marca_id)
+    return `<tr>
+      <td class="text-gray-400 text-xs">#${m.id}</td>
+      <td class="font-semibold">${m.nome}</td>
+      <td><span class="tag bg-blue-100 text-blue-700">${tipoLabel[m.tipo] || m.tipo}</span></td>
+      <td>${marca?.nome || '-'}</td>
+      <td class="flex gap-2">
+        <button class="btn btn-gray" onclick="abrirEditarModelo(${m.id})">✏️ Editar</button>
+        <button class="btn btn-red" onclick="deletarModelo(${m.id})">🗑️ Excluir</button>
+      </td>
+    </tr>`
+  }).join('')
+
+  // Atualiza select de chuteiras
+  const sel = document.getElementById('chuteira-modelo')
+  if (sel) sel.innerHTML = '<option value="">Selecione o modelo</option>' +
+    modelos.map(m => `<option value="${m.id}">${m.nome} (${m.tipo})</option>`).join('')
+}
+
+async function criarModelo() {
+  const nome     = document.getElementById('modelo-nome').value.trim()
+  const tipo     = document.getElementById('modelo-tipo').value
+  const marca_id = parseInt(document.getElementById('modelo-marca').value)
+  if (!nome || !tipo || !marca_id) return toast('Preencha todos os campos', '#ef4444')
+  try {
+    await api('POST', '/modelos', { nome, tipo, marca_id })
+    document.getElementById('modelo-nome').value = ''
+    carregarModelos()
+    toast('Modelo criado!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function abrirEditarModelo(id) {
+  const m = modelos.find(x => x.id === id)
+  editCtx = { tipo: 'modelo', id }
+  document.getElementById('modal-editar-titulo').textContent = 'Editar Modelo'
+  document.getElementById('modal-editar-corpo').innerHTML = `
+    <label class="text-sm font-semibold text-gray-600">Nome</label>
+    <input id="edit-campo-nome" value="${m.nome}" />
+    <label class="text-sm font-semibold text-gray-600">Tipo</label>
+    <select id="edit-campo-tipo">
+      <option value="FG" ${m.tipo==='FG'?'selected':''}>FG — Campo</option>
+      <option value="TF" ${m.tipo==='TF'?'selected':''}>TF — Society</option>
+      <option value="IC" ${m.tipo==='IC'?'selected':''}>IC — Quadra/Futsal</option>
+    </select>
+    <label class="text-sm font-semibold text-gray-600">Marca</label>
+    <select id="edit-campo-marca">
+      ${marcas.map(x=>`<option value="${x.id}" ${x.id===m.marca_id?'selected':''}>${x.nome}</option>`).join('')}
+    </select>`
+  document.getElementById('modal-editar').classList.add('open')
+}
+
+async function deletarModelo(id) {
+  if (!confirm('Excluir este modelo?')) return
+  try { await api('DELETE', '/modelos/' + id); carregarModelos(); toast('Modelo excluído!') }
+  catch(e) { toast(e.message, '#ef4444') }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHUTEIRAS
+// ═══════════════════════════════════════════════════════════
+async function carregarChuteiras() {
+  const lista = await api('GET', '/chuteiras')
+  const tb = document.getElementById('tabela-chuteiras')
+  tb.innerHTML = lista.map(c => `
+    <tr>
+      <td class="text-gray-400 text-xs">#${c.id}</td>
+      <td class="font-semibold">${c.modelo}</td>
+      <td><span class="tag bg-blue-100 text-blue-700">${c.tipo}</span></td>
+      <td>${c.cor}</td>
+      <td class="text-green-700 font-semibold">R$ ${Number(c.preco_pix).toFixed(2)}</td>
+      <td>R$ ${Number(c.preco_cartao).toFixed(2)}</td>
+      <td>
+        <button class="btn btn-gray text-xs" onclick="abrirFotos('chuteira',${c.id},'${c.modelo} - ${c.cor}')">
+          🖼️ ${c.fotos.length} foto(s)
+        </button>
+      </td>
+      <td class="flex gap-2">
+        <button class="btn btn-gray" onclick="abrirEditarChuteira(${c.id})">✏️</button>
+        <button class="btn btn-red" onclick="deletarChuteira(${c.id})">🗑️</button>
+      </td>
+    </tr>`).join('')
+}
+
+async function criarChuteira() {
+  const modelo_id   = parseInt(document.getElementById('chuteira-modelo').value)
+  const cor         = document.getElementById('chuteira-cor').value.trim()
+  const preco_pix   = parseFloat(document.getElementById('chuteira-pix').value)
+  const preco_cartao= parseFloat(document.getElementById('chuteira-cartao').value)
+  if (!modelo_id || !cor || !preco_pix || !preco_cartao) return toast('Preencha todos os campos', '#ef4444')
+  try {
+    await api('POST', '/chuteiras', { modelo_id, cor, preco_pix, preco_cartao })
+    document.getElementById('chuteira-cor').value = ''
+    document.getElementById('chuteira-pix').value = ''
+    document.getElementById('chuteira-cartao').value = ''
+    carregarChuteiras()
+    toast('Chuteira criada!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function abrirEditarChuteira(id) {
+  // Busca pelo ID na tabela atual
+  api('GET', '/chuteiras/' + id).then(c => {
+    editCtx = { tipo: 'chuteira', id }
+    document.getElementById('modal-editar-titulo').textContent = 'Editar Chuteira'
+    document.getElementById('modal-editar-corpo').innerHTML = `
+      <label class="text-sm font-semibold text-gray-600">Modelo</label>
+      <select id="edit-campo-modelo">
+        ${modelos.map(m=>`<option value="${m.id}" ${m.id===c.modelo_id?'selected':''}>${m.nome} (${m.tipo})</option>`).join('')}
+      </select>
+      <label class="text-sm font-semibold text-gray-600">Cor</label>
+      <input id="edit-campo-cor" value="${c.cor}" />
+      <label class="text-sm font-semibold text-gray-600">Preço Pix (R$)</label>
+      <input id="edit-campo-pix" type="number" step="0.01" value="${c.preco_pix}" />
+      <label class="text-sm font-semibold text-gray-600">Preço Cartão (R$)</label>
+      <input id="edit-campo-cartao" type="number" step="0.01" value="${c.preco_cartao}" />`
+    document.getElementById('modal-editar').classList.add('open')
+  })
+}
+
+async function deletarChuteira(id) {
+  if (!confirm('Excluir esta chuteira?')) return
+  try { await api('DELETE', '/chuteiras/' + id); carregarChuteiras(); toast('Chuteira excluída!') }
+  catch(e) { toast(e.message, '#ef4444') }
+}
+
+// ═══════════════════════════════════════════════════════════
+// LIGAS
+// ═══════════════════════════════════════════════════════════
+async function carregarLigas() {
+  ligas = await api('GET', '/ligas')
+  const tb = document.getElementById('tabela-ligas')
+  if (tb) tb.innerHTML = ligas.map(l => `
+    <tr>
+      <td class="text-gray-400 text-xs">#${l.id}</td>
+      <td class="font-semibold">${l.nome}</td>
+      <td class="flex gap-2">
+        <button class="btn btn-gray" onclick="abrirEditarLiga(${l.id},'${l.nome.replace(/'/g,"\\'")}')">✏️ Editar</button>
+        <button class="btn btn-red" onclick="deletarLiga(${l.id})">🗑️ Excluir</button>
+      </td>
+    </tr>`).join('')
+
+  // Atualiza selects de time
+  const selTime = document.getElementById('time-liga')
+  if (selTime) selTime.innerHTML = '<option value="">Selecione a liga</option>' +
+    ligas.map(l => `<option value="${l.id}">${l.nome}</option>`).join('')
+}
+
+async function criarLiga() {
+  const nome = document.getElementById('liga-nome').value.trim()
+  if (!nome) return toast('Digite o nome da liga', '#ef4444')
+  try {
+    await api('POST', '/ligas', { nome })
+    document.getElementById('liga-nome').value = ''
+    carregarLigas()
+    toast('Liga criada!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function abrirEditarLiga(id, nome) {
+  editCtx = { tipo: 'liga', id }
+  document.getElementById('modal-editar-titulo').textContent = 'Editar Liga'
+  document.getElementById('modal-editar-corpo').innerHTML = `
+    <label class="text-sm font-semibold text-gray-600">Nome</label>
+    <input id="edit-campo-nome" value="${nome}" />`
+  document.getElementById('modal-editar').classList.add('open')
+}
+
+async function deletarLiga(id) {
+  if (!confirm('Excluir esta liga?')) return
+  try { await api('DELETE', '/ligas/' + id); carregarLigas(); toast('Liga excluída!') }
+  catch(e) { toast(e.message, '#ef4444') }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TIMES
+// ═══════════════════════════════════════════════════════════
+async function carregarTimes() {
+  times = await api('GET', '/times')
+  const tb = document.getElementById('tabela-times')
+  if (tb) tb.innerHTML = times.map(t => {
+    const liga = ligas.find(l => l.id === t.liga_id)
+    return `<tr>
+      <td class="text-gray-400 text-xs">#${t.id}</td>
+      <td class="font-semibold">${t.nome}</td>
+      <td>${liga?.nome || '-'}</td>
+      <td class="flex gap-2">
+        <button class="btn btn-gray" onclick="abrirEditarTime(${t.id})">✏️ Editar</button>
+        <button class="btn btn-red" onclick="deletarTime(${t.id})">🗑️ Excluir</button>
+      </td>
+    </tr>`
+  }).join('')
+
+  // Atualiza select de camisas
+  const selCamisa = document.getElementById('camisa-time')
+  if (selCamisa) selCamisa.innerHTML = '<option value="">Selecione o time</option>' +
+    times.map(t => {
+      const liga = ligas.find(l => l.id === t.liga_id)
+      return `<option value="${t.id}">${t.nome} ${liga ? '('+liga.nome+')' : ''}</option>`
+    }).join('')
+}
+
+async function criarTime() {
+  const nome    = document.getElementById('time-nome').value.trim()
+  const liga_id = parseInt(document.getElementById('time-liga').value)
+  if (!nome || !liga_id) return toast('Preencha todos os campos', '#ef4444')
+  try {
+    await api('POST', '/times', { nome, liga_id })
+    document.getElementById('time-nome').value = ''
+    carregarTimes()
+    toast('Time criado!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function abrirEditarTime(id) {
+  const t = times.find(x => x.id === id)
+  editCtx = { tipo: 'time', id }
+  document.getElementById('modal-editar-titulo').textContent = 'Editar Time'
+  document.getElementById('modal-editar-corpo').innerHTML = `
+    <label class="text-sm font-semibold text-gray-600">Nome</label>
+    <input id="edit-campo-nome" value="${t.nome}" />
+    <label class="text-sm font-semibold text-gray-600">Liga</label>
+    <select id="edit-campo-liga">
+      ${ligas.map(l=>`<option value="${l.id}" ${l.id===t.liga_id?'selected':''}>${l.nome}</option>`).join('')}
+    </select>`
+  document.getElementById('modal-editar').classList.add('open')
+}
+
+async function deletarTime(id) {
+  if (!confirm('Excluir este time?')) return
+  try { await api('DELETE', '/times/' + id); carregarTimes(); toast('Time excluído!') }
+  catch(e) { toast(e.message, '#ef4444') }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CAMISAS
+// ═══════════════════════════════════════════════════════════
+async function carregarCamisas() {
+  const lista = await api('GET', '/camisas')
+  const tb = document.getElementById('tabela-camisas')
+  tb.innerHTML = lista.map(c => `
+    <tr>
+      <td class="text-gray-400 text-xs">#${c.id}</td>
+      <td class="font-semibold">${c.nome}</td>
+      <td>${c.time}</td>
+      <td><span class="tag bg-yellow-100 text-yellow-700">${c.liga}</span></td>
+      <td>
+        <button class="btn btn-gray text-xs" onclick="abrirFotos('camisa',${c.id},'${c.nome.replace(/'/g,"\\'")}')">
+          🖼️ ${c.fotos.length} foto(s)
+        </button>
+      </td>
+      <td class="flex gap-2">
+        <button class="btn btn-gray" onclick="abrirEditarCamisa(${c.id})">✏️</button>
+        <button class="btn btn-red" onclick="deletarCamisa(${c.id})">🗑️</button>
+      </td>
+    </tr>`).join('')
+}
+
+async function criarCamisa() {
+  const nome    = document.getElementById('camisa-nome').value.trim()
+  const time_id = parseInt(document.getElementById('camisa-time').value)
+  if (!nome || !time_id) return toast('Preencha todos os campos', '#ef4444')
+  try {
+    await api('POST', '/camisas', { nome, time_id })
+    document.getElementById('camisa-nome').value = ''
+    carregarCamisas()
+    toast('Camisa criada!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function abrirEditarCamisa(id) {
+  api('GET', '/camisas/' + id).then(c => {
+    const timeObj = times.find(t => t.nome === c.time)
+    editCtx = { tipo: 'camisa', id }
+    document.getElementById('modal-editar-titulo').textContent = 'Editar Camisa'
+    document.getElementById('modal-editar-corpo').innerHTML = `
+      <label class="text-sm font-semibold text-gray-600">Nome / Modelo</label>
+      <input id="edit-campo-nome" value="${c.nome}" />
+      <label class="text-sm font-semibold text-gray-600">Time</label>
+      <select id="edit-campo-time">
+        ${times.map(t=>`<option value="${t.id}" ${t.nome===c.time?'selected':''}>${t.nome}</option>`).join('')}
+      </select>`
+    document.getElementById('modal-editar').classList.add('open')
+  })
+}
+
+async function deletarCamisa(id) {
+  if (!confirm('Excluir esta camisa?')) return
+  try { await api('DELETE', '/camisas/' + id); carregarCamisas(); toast('Camisa excluída!') }
+  catch(e) { toast(e.message, '#ef4444') }
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAL EDITAR — salvar genérico
+// ═══════════════════════════════════════════════════════════
+async function salvarEdicao() {
+  try {
+    const { tipo, id } = editCtx
+
+    if (tipo === 'marca') {
+      const nome = document.getElementById('edit-campo-nome').value.trim()
+      await api('PUT', '/marcas/' + id, { nome })
+      carregarMarcas()
+
+    } else if (tipo === 'modelo') {
+      const nome     = document.getElementById('edit-campo-nome').value.trim()
+      const tipo_val = document.getElementById('edit-campo-tipo').value
+      const marca_id = parseInt(document.getElementById('edit-campo-marca').value)
+      await api('PUT', '/modelos/' + id, { nome, tipo: tipo_val, marca_id })
+      carregarModelos()
+
+    } else if (tipo === 'chuteira') {
+      const modelo_id    = parseInt(document.getElementById('edit-campo-modelo').value)
+      const cor          = document.getElementById('edit-campo-cor').value.trim()
+      const preco_pix    = parseFloat(document.getElementById('edit-campo-pix').value)
+      const preco_cartao = parseFloat(document.getElementById('edit-campo-cartao').value)
+      await api('PUT', '/chuteiras/' + id, { modelo_id, cor, preco_pix, preco_cartao })
+      carregarChuteiras()
+
+    } else if (tipo === 'liga') {
+      const nome = document.getElementById('edit-campo-nome').value.trim()
+      await api('PUT', '/ligas/' + id, { nome })
+      carregarLigas()
+
+    } else if (tipo === 'time') {
+      const nome    = document.getElementById('edit-campo-nome').value.trim()
+      const liga_id = parseInt(document.getElementById('edit-campo-liga').value)
+      await api('PUT', '/times/' + id, { nome, liga_id })
+      carregarTimes()
+
+    } else if (tipo === 'camisa') {
+      const nome    = document.getElementById('edit-campo-nome').value.trim()
+      const time_id = parseInt(document.getElementById('edit-campo-time').value)
+      await api('PUT', '/camisas/' + id, { nome, time_id })
+      carregarCamisas()
+    }
+
+    fecharModalEditar()
+    toast('Salvo com sucesso!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function fecharModalEditar() {
+  document.getElementById('modal-editar').classList.remove('open')
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAL FOTOS
+// ═══════════════════════════════════════════════════════════
+async function abrirFotos(tipo, id, titulo) {
+  fotoCtx = { tipo, id }
+  document.getElementById('modal-fotos-titulo').textContent = '🖼️ Fotos — ' + titulo
+  document.getElementById('foto-input').value = ''
+  document.getElementById('modal-fotos').classList.add('open')
+  await renderizarFotos()
+}
+
+async function renderizarFotos() {
+  const { tipo, id } = fotoCtx
+  const path = tipo === 'chuteira' ? `/chuteiras/${id}` : `/camisas/${id}`
+  const item = await api('GET', path)
+  const fotos = item.fotos || []
+
+  const lista = document.getElementById('modal-fotos-lista')
+  if (fotos.length === 0) {
+    lista.innerHTML = '<p class="col-span-3 text-gray-400 text-sm text-center py-4">Nenhuma foto cadastrada</p>'
+    return
+  }
+  lista.innerHTML = fotos.map(f => `
+    <div class="relative group">
+      <img src="${f.url}" class="w-full h-24 object-cover rounded-lg border" />
+      <button onclick="deletarFoto(${f.id})"
+        class="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6
+               items-center justify-center hidden group-hover:flex font-bold">✕</button>
+    </div>`).join('')
+}
+
+async function uploadFoto() {
+  const input = document.getElementById('foto-input')
+  if (!input.files[0]) return toast('Selecione uma imagem', '#ef4444')
+  const { tipo, id } = fotoCtx
+  const path = tipo === 'chuteira' ? `/chuteiras/${id}/fotos` : `/camisas/${id}/fotos`
+  const fd = new FormData()
+  fd.append('foto', input.files[0])
+  try {
+    await apiUpload(path, fd)
+    input.value = ''
+    await renderizarFotos()
+    if (tipo === 'chuteira') carregarChuteiras(); else carregarCamisas()
+    toast('Foto enviada!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+async function deletarFoto(fotoId) {
+  if (!confirm('Excluir esta foto?')) return
+  const { tipo, id } = fotoCtx
+  const path = tipo === 'chuteira' ? `/chuteiras/${id}/fotos/${fotoId}` : `/camisas/${id}/fotos/${fotoId}`
+  try {
+    await api('DELETE', path)
+    await renderizarFotos()
+    if (tipo === 'chuteira') carregarChuteiras(); else carregarCamisas()
+    toast('Foto excluída!')
+  } catch(e) { toast(e.message, '#ef4444') }
+}
+
+function fecharModalFotos() {
+  document.getElementById('modal-fotos').classList.remove('open')
+}
+
+// Fecha modal clicando fora
+document.getElementById('modal-fotos').addEventListener('click', e => {
+  if (e.target === e.currentTarget) fecharModalFotos()
+})
+document.getElementById('modal-editar').addEventListener('click', e => {
+  if (e.target === e.currentTarget) fecharModalEditar()
+})
+
+// ─── INIT ─────────────────────────────────────────────────
+carregarMarcas()
+</script>
+</body>
+</html>
