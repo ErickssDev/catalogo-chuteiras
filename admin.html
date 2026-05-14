@@ -39,7 +39,7 @@
 <div class="bg-white shadow-sm px-8 py-4 flex items-center gap-4 mb-6">
   <span class="text-2xl">⚽</span>
   <h1 class="text-xl font-bold text-gray-800">GS Esportes <span class="text-blue-600">Admin</span></h1>
-  <span class="ml-auto text-xs text-gray-400">API: <span id="api-url-label" class="font-mono">http://localhost:8000</span></span>
+  <span class="ml-auto text-xs text-gray-400">API: <span id="api-url-label" class="font-mono">https://web-production-b5ede.up.railway.app</span></span>
 </div>
 
 <div class="max-w-6xl mx-auto px-4">
@@ -217,7 +217,9 @@
 </div>
 
 <script>
-const API = 'http://localhost:8000'
+const API = 'https://web-production-b5ede.up.railway.app'
+
+document.getElementById('api-url-label').textContent = API
 
 // ─── ESTADO GLOBAL ────────────────────────────────────────
 let marcas = [], modelos = [], ligas = [], times = []
