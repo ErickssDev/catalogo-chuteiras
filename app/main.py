@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.database import criar_tabelas
-from app.routes import router
+from app.routes_chuteiras import router
 from app.routes_camisas import router as camisas_router
 from dotenv import load_dotenv
 import os
