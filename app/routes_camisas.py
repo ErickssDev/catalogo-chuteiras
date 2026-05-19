@@ -95,7 +95,7 @@ def deletar_time(id: int, session: Session = Depends(get_session)):
 @router.get("/camisas")
 def listar_camisas(session: Session = Depends(get_session)):
     modelos = session.exec(
-        select(ModeloCamisa).order_by(ModeloCamisa.id.desc())
+        select(ModeloCamisa).order_by(ModeloCamisa.id.asc())
     ).all()
 
     resultado = []
