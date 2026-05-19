@@ -94,14 +94,20 @@ def deletar_time(id: int, session: Session = Depends(get_session)):
 
 @router.get("/camisas")
 def listar_camisas(session: Session = Depends(get_session)):
-    modelos = session.exec(select(ModeloCamisa)).all()
+    modelos = session.exec(
+        select(ModeloCamisa).order_by(ModeloCamisa.id.desc())
+    ).all()
+
     resultado = []
+
     for modelo in modelos:
         fotos = session.exec(
             select(FotoModeloCamisa).where(FotoModeloCamisa.modelo_id == modelo.id)
         ).all()
+
         time = session.get(TimeCamisa, modelo.time_id)
         liga = session.get(Liga, time.liga_id)
+
         resultado.append({
             "id": modelo.id,
             "nome": modelo.nome,
@@ -109,6 +115,7 @@ def listar_camisas(session: Session = Depends(get_session)):
             "liga": liga.nome,
             "fotos": [{"id": f.id, "url": f.url} for f in fotos],
         })
+
     return resultado
 
 @router.get("/camisas/{id}")
